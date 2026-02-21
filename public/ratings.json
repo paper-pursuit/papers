@@ -1,1 +1,24 @@
-[]
+[
+  {
+    "issue_number": 5,
+    "display_title": "Time, Clocks, and the Ordering of Events in a Distributed System",
+    "github_title": "/items/ordering-of-events",
+    "tags": [],
+    "url": "https://github.com/paper-pursuit/papers/issues/5",
+    "reaction_counts": {
+      "hooray": 1,
+      "heart": 1
+    }
+  },
+  {
+    "issue_number": 4,
+    "display_title": "On Designing and Deploying Internet-Scale Services",
+    "github_title": "/items/internet-scale-services",
+    "tags": [],
+    "url": "https://github.com/paper-pursuit/papers/issues/4",
+    "reaction_counts": {
+      "heart": 1,
+      "+1": 1
+    }
+  }
+]
