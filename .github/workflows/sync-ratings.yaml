@@ -29,28 +29,37 @@ jobs:
             const ratings = [];
 
             for (const issue of issues.data) {
-              // 1. Find the bot's comment on this issue
+              // 1. Extract Heading from Body using Regex
+              // Looks for # followed by a space, then captures everything until the end of the line
+              const titleMatch = issue.body ? issue.body.match(/^#\s+(.+)$/m) : null;
+              const extractedTitle = titleMatch ? titleMatch[1].trim() : "No Title Found";
+
+              // 2. Filter labels (exclude 'paper')
+              const tags = issue.labels
+                .map(l => l.name)
+                .filter(name => name !== 'paper');
+
+              // 3. Find the bot's comment
               const comments = await github.rest.issues.listComments({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: issue.number
               });
 
-              // Change 'Bot Welcome' to a unique string in your actual comment
-              const targetComment = comments.data.find(c => c.body.includes('Use this meta-comment to react to this paper'));
+              const targetComment = comments.data.find(c => c.body.includes("🚀 We've received your report"));
 
               if (targetComment) {
-                // 2. Get reactions for that specific comment
                 const reactions = await github.rest.reactions.listForIssueComment({
                   owner: context.repo.owner,
                   repo: context.repo.repo,
                   comment_id: targetComment.id
                 });
 
-                // 3. Simplify the data for your web page
                 ratings.push({
                   issue_number: issue.number,
-                  title: issue.title,
+                  display_title: extractedTitle, // The # Heading title
+                  github_title: issue.title,     // The actual Issue title
+                  tags: tags,                    // All other labels
                   url: issue.html_url,
                   reaction_counts: reactions.data.reduce((acc, r) => {
                     acc[r.content] = (acc[r.content] || 0) + 1;
@@ -60,9 +69,8 @@ jobs:
               }
             }
             
-            // Write to a file
             const fs = require('fs');
-            fs.writeFileSync('ratings.json', JSON.stringify(ratings, null, 2));
+            fs.writeFileSync('public/ratings.json', JSON.stringify(ratings, null, 2));
 
       - name: Commit and Push Changes
         run: |
