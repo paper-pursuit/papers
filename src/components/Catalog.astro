@@ -1,0 +1,65 @@
+---
+import {Heading, Link} from "@primer/react";
+
+type Paper = {
+    title: string;
+    reaction_counts: {
+        '+1': number;
+        '-1': number;
+        laugh: number;
+        confused: number;
+        heart: number;
+        hooray: number;
+        rocket: number;
+        eyes: number;
+    };
+};
+
+// Read ratings data
+const ratingsResponse = await fetch(new URL('/ratings.json', Astro.url));
+const ratings = await ratingsResponse.json() as Paper[];
+
+// Calculate total reactions for each paper
+const papersWithReactions = ratings.map(paper => {
+    const totalReactions = Object.values(paper.reaction_counts).reduce((sum, count) => sum + count, 0);
+    return {
+        ...paper,
+        totalReactions
+    };
+});
+
+// Sort by total reactions (descending)
+const sortedPapers = papersWithReactions.sort((a, b) => b.totalReactions - a.totalReactions);
+---
+
+<div>
+    <div class="flex flex-row justify-between items-center mb-4">
+        <Heading as="h4" className="font-serif italic">Paper Pursuit</Heading>
+    </div>
+    <main class="timeline">
+        {sortedPapers.map(paper => {
+            const itemPath = paper.title.replace('/items/', '');
+            return (
+                <article class="timeline-comment">
+                    <div class="comment">
+                        <header class="comment-header">
+                            <span class="comment-meta">
+                                <Link href={`/items/${itemPath}`} className="text-link">
+                                    <strong>{itemPath}</strong>
+                                </Link>
+                            </span>
+                            <div class="text-sm text-gray-600 mt-1">
+                                {Object.entries(paper.reaction_counts).map(([reaction, count]) => (
+                                    <span class="mr-3">
+                                        {reaction === '+1' ? '👍' : reaction === 'heart' ? '❤️' : reaction === 'hooray' ? '🎉' : reaction} {count}
+                                    </span>
+                                ))}
+                                <span class="font-semibold">Total: {paper.totalReactions}</span>
+                            </div>
+                        </header>
+                    </div>
+                </article>
+            );
+        })}
+    </main>
+</div>
