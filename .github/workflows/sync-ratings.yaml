@@ -46,7 +46,7 @@ jobs:
                 issue_number: issue.number
               });
 
-              const targetComment = comments.data.find(c => c.body.includes("🚀 We've received your report"));
+              const targetComment = comments.data.find(c => c.body.includes("Use this meta-comment to react to this paper"));
 
               if (targetComment) {
                 const reactions = await github.rest.reactions.listForIssueComment({
