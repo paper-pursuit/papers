@@ -1,0 +1,9 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Detail from '../../components/Detail.astro';
+export const prerender = false; // Not needed in 'server' mode
+const { item } = Astro.params;
+---
+<Layout>
+    <Detail item={item} />
+</Layout>

@@ -1,0 +1,59 @@
+---
+import {Heading, Link} from "@primer/react";
+import {marked} from "marked";
+const item = Astro.props.item;
+const data = await fetch(`https://api.github.com/search/issues?q=%22items%2F${item}%22%20type%3Aissue%20in%3Atitle%20repo%3Apaper-pursuit%2Fpapers&sort=created&order=asc`).then(res => res.json());
+const issue = data.items[0];
+if (!issue || !issue.body) {
+    return ''
+}
+const htmlContent = marked(issue.body);
+---
+
+<div>
+    <div class="flex flex-row justify-between items-center mb-4">
+        <Heading as="h4" className="font-serif italic">Paper Pursuit</Heading>
+        <div class="flex flex-row">
+            <Link href="/">
+                Home
+            </Link>
+            <span class="px-1">•</span>
+            <Link href={issue.html_url} target="_blank" rel="noopener noreferrer">
+                View on GitHub
+            </Link>
+        </div>
+    </div>
+    <main class="timeline">
+        <article class="timeline-comment">
+            <a class="avatar" href={issue.user.html_url} tabindex="-1" target="_blank" rel="noopener noreferrer">
+                <img
+                        alt="paper-pursuit"
+                        height="44"
+                        width="44"
+                        src={issue.user.avatar_url}
+                />
+            </a>
+            <div class="comment">
+                <header class="comment-header">
+				<span class="comment-meta">
+				  <a class="text-link" href={issue.user.html_url} target="_blank" rel="noopener noreferrer">
+					<strong>{issue.user.login}</strong>
+				  </a>
+				</span>
+                </header>
+                <article class="markdown-body" set:html={htmlContent}>
+
+                </article>
+            </div>
+
+        </article>
+
+    </main>
+    <script src="https://utteranc.es/client.js"
+            repo="paper-pursuit/papers"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+    </script>
+</div>
